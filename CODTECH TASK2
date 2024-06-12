@@ -1,0 +1,162 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure to hold student information
+typedef struct {
+    char name[50];
+    int roll_number;
+    float marks[5];
+    float total_marks;
+    float percentage;
+} Student;
+
+// Function prototypes
+void addStudent(Student students[], int *count);
+void editStudent(Student students[], int count);
+void deleteStudent(Student students[], int *count);
+void calculateGrades(Student students[], int count);
+void printMenu();
+
+int main() {
+    Student students[50]; // Assuming a maximum of 50 students
+    int choice, count = 0;
+
+    do {
+        printMenu();
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                addStudent(students, &count);
+                break;
+            case 2:
+                editStudent(students, count);
+                break;
+            case 3:
+                deleteStudent(students, &count);
+                break;
+            case 4:
+                calculateGrades(students, count);
+                break;
+            case 5:
+                printf("Exiting the program.\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+        }
+    } while(choice != 5);
+
+    return 0;
+}
+
+// Function to print the menu
+void printMenu() {
+    printf("\nStudent Management System Menu\n");
+    printf("1. Add Student\n");
+    printf("2. Edit Student\n");
+    printf("3. Delete Student\n");
+    printf("4. Calculate Grades\n");
+    printf("5. Exit\n");
+}
+
+// Function to add a student
+void addStudent(Student students[], int *count) {
+    if (*count >= 50) {
+        printf("Cannot add more students. Maximum limit reached.\n");
+        return;
+    }
+
+    Student newStudent;
+
+    printf("Enter student name: ");
+    scanf(" %[^\n]", newStudent.name);
+    printf("Enter student roll number: ");
+    scanf("%d", &newStudent.roll_number);
+    printf("Enter marks for 5 subjects: ");
+    for (int i = 0; i < 5; i++) {
+        scanf("%f", &newStudent.marks[i]);
+        newStudent.total_marks += newStudent.marks[i];
+    }
+    newStudent.percentage = newStudent.total_marks / 5;
+
+    students[*count] = newStudent;
+    (*count)++;
+
+    printf("Student added successfully.\n");
+}
+
+// Function to edit a student
+void editStudent(Student students[], int count) {
+    int roll_number, found = 0;
+
+    printf("Enter the roll number of the student you want to edit: ");
+    scanf("%d", &roll_number);
+
+    for (int i = 0; i < count; i++) {
+        if (students[i].roll_number == roll_number) {
+            printf("Enter new name for the student: ");
+            scanf(" %[^\n]", students[i].name);
+            printf("Enter new marks for 5 subjects: ");
+            students[i].total_marks = 0;
+            for (int j = 0; j < 5; j++) {
+                scanf("%f", &students[i].marks[j]);
+                students[i].total_marks += students[i].marks[j];
+            }
+            students[i].percentage = students[i].total_marks / 5;
+
+            printf("Student details updated successfully.\n");
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+        printf("Student with roll number %d not found.\n", roll_number);
+}
+
+// Function to delete a student
+void deleteStudent(Student students[], int *count) {
+    int roll_number, found = 0;
+
+    printf("Enter the roll number of the student you want to delete: ");
+    scanf("%d", &roll_number);
+
+    for (int i = 0; i < *count; i++) {
+        if (students[i].roll_number == roll_number) {
+            for (int j = i; j < *count - 1; j++) {
+                students[j] = students[j + 1];
+            }
+            (*count)--;
+            printf("Student deleted successfully.\n");
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+        printf("Student with roll number %d not found.\n", roll_number);
+}
+
+// Function to calculate grades
+void calculateGrades(Student students[], int count) {
+    for (int i = 0; i < count; i++) {
+        printf("Student Name: %s\n", students[i].name);
+        printf("Roll Number: %d\n", students[i].roll_number);
+        printf("Total Marks: %.2f\n", students[i].total_marks);
+        printf("Percentage: %.2f%%\n", students[i].percentage);
+        printf("Grade: ");
+        if (students[i].percentage >= 90)
+            printf("A\n");
+        else if (students[i].percentage >= 80)
+            printf("B\n");
+        else if (students[i].percentage >= 70)
+            printf("C\n");
+        else if (students[i].percentage >= 60)
+            printf("D\n");
+        else
+            printf("F\n");
+        printf("\n");
+    }
+}
